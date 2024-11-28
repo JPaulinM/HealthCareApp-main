@@ -17,6 +17,7 @@ const CreateAccount = ({ navigation }) => {
     const [errors, setErrors] = useState({});
     const [secureTextEntry, setSecureTextEntry] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
 
     // Validation logic
     const validateFields = () => {
@@ -50,7 +51,10 @@ const CreateAccount = ({ navigation }) => {
                     mobileNumber: `+${phoneCode}${mobileNumber}`,
                     birthDate: `${birthDate.day}/${birthDate.month}/${birthDate.year}`,
                 });
-                navigation.navigate('HomeScreen');
+                setSuccessMessage('Account created successfully!');  // Success message
+                setTimeout(() => {
+                    navigation.navigate('HomeScreen');  // Navigate after a few seconds
+                }, 2000);  // Allow time to display the success message
             } catch (error) {
                 setErrors((prev) => ({ ...prev, email: 'Email is already in use or invalid' }));
             } finally {
@@ -82,6 +86,7 @@ const CreateAccount = ({ navigation }) => {
         <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
             <View style={styles.container}>
                 <Text style={styles.title}>Create New Account</Text>
+                
 
                 {/* Full Name Input */}
                 <TextInput
@@ -207,6 +212,9 @@ const CreateAccount = ({ navigation }) => {
                     {loading ? 'Creating Account...' : 'Sign Up'}
                 </Button>
 
+                {/* Success Message */}
+                {successMessage && <Text style={styles.successMessage}>{successMessage}</Text>}
+
                 {/* Error Message for Google Sign-In */}
                 {errors.google && <HelperText type="error">{errors.google}</HelperText>}
 
@@ -229,6 +237,19 @@ const CreateAccount = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     // styles remain the same as in your original code
+    successMessage: {
+        color: 'green',
+        fontSize: 16,
+        marginVertical: 10,
+        textAlign: 'center',
+    },
+    ontainer: {
+        flex: 1,
+        padding: 20,
+    },
+    input: {
+        marginBottom: 10,
+    },
 });
 
 export default CreateAccount;

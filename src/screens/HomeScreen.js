@@ -1,161 +1,240 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
-import { Text, IconButton, Card, Divider } from 'react-native-paper';
+import { View, ScrollView, StyleSheet, Dimensions, TextInput } from 'react-native';
+import { Text, IconButton, Card, Menu, FAB } from 'react-native-paper';
+
+const { width } = Dimensions.get('window');
 
 const HomeScreen = ({ navigation }) => {
+  const [menuVisible, setMenuVisible] = React.useState(false);
+
+  const openMenu = () => setMenuVisible(true);
+  const closeMenu = () => setMenuVisible(false);
+
+  const handleEmergency = () => {
+    navigation.navigate('EmergencyScreen');
+  };
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {/* Welcome Section */}
+    <View style={styles.container}>
+      {/* Header Section */}
       <View style={styles.header}>
-        <Text variant="headlineLarge" style={styles.welcomeText}>
-          Welcome to Dr.GPT!
+        <View style={styles.headerRow}>
+          {/* Profile Button */}
+          <IconButton
+            icon="account"
+            size={30}
+            style={styles.profileIcon}
+            onPress={() => navigation.navigate('ProfileScreen')}
+          />
+
+          {/* Search Bar */}
+          <TextInput
+            style={styles.searchBar}
+            placeholder="Search..."
+            placeholderTextColor="#999"
+          />
+
+          {/* Notification Button */}
+          <IconButton
+            icon="bell"
+            size={30}
+            style={styles.notificationIcon}
+            onPress={() => navigation.navigate('NotificationsScreen')}
+          />
+        </View>
+
+        <Text variant="headlineLarge" style={styles.headerText}>
+          Hello, John!
         </Text>
         <Text variant="bodyMedium" style={styles.subtitle}>
-          Your Virtual Health Companion
+          Let’s prioritize your health today.
         </Text>
       </View>
 
-      {/* Quick Actions Section */}
-      <View style={styles.quickActions}>
-        <Card style={styles.actionCard} onPress={() => navigation.navigate('ChatScreen')}>
-          <IconButton icon="chat" size={30} style={styles.actionIcon} />
-          <Text variant="labelMedium" style={styles.cardText}>
-            Chat with Dr.GPT
-          </Text>
-        </Card>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Feature Cards */}
+        <View style={styles.featureGrid}>
+          {/* Chat with Dr. GPT */}
+          <Card style={styles.featureCard} onPress={() => navigation.navigate('ChatScreen')}>
+            <IconButton icon="chat" size={30} style={styles.cardIcon} />
+            <Text style={styles.cardText}>Chat with Dr.GPT</Text>
+          </Card>
+          <Card style={styles.featureCard} onPress={() => navigation.navigate('HealthTipsScreen')}>
+            <IconButton icon="heart" size={30} style={styles.cardIcon} />
+            <Text style={styles.cardText}>Health Tips</Text>
+          </Card>
+          {/* Settings */}
+          <Card style={styles.featureCard} onPress={() => navigation.navigate('SettingsScreen')}>
+            <IconButton icon="cog" size={30} style={styles.cardIcon} />
+            <Text style={styles.cardText}>Settings</Text>
+          </Card>
+        </View>
+      </ScrollView>
 
-        <Card style={styles.actionCard} onPress={() => navigation.navigate('HealthTipsScreen')}>
-          <IconButton icon="heart" size={30} style={styles.actionIcon} />
-          <Text variant="labelMedium" style={styles.cardText}>
-            Health Tips
-          </Text>
-        </Card>
+      {/* Floating Bottom Navigation */}
+      <View style={styles.bottomNavigation}>
+        <IconButton
+          icon="home"
+          size={40}
+          style={styles.bottomIcon}
+          onPress={() => navigation.navigate('HomeScreen')}
+        />
+        <IconButton
+          icon="calendar"
+          size={40}
+          style={styles.bottomIcon}
+          onPress={() => navigation.navigate('AppointmentsScreen')}
+        />
+        <IconButton
+          icon="pill"
+          size={40}
+          style={styles.bottomIcon}
+          onPress={() => navigation.navigate('PrescriptionsScreen')}
+        />
+        <Menu
+          visible={menuVisible}
+          onDismiss={closeMenu}
+          anchor={
+            <IconButton
+              icon="menu"
+              size={40}
+              style={styles.bottomIcon}
+              onPress={openMenu}
+            />
+          }
+        >
+          <Menu.Item
+            onPress={() => {
+              closeMenu();
+              navigation.navigate('LabResultsScreen');
+            }}
+            title="Lab Results"
+          />
+          <Menu.Item
+            onPress={() => {
+              closeMenu();
+              navigation.navigate('InsuranceScreen');
+            }}
+            title="Insurance Info"
+          />
+          <Menu.Item
+            onPress={() => {
+              closeMenu();
+              navigation.navigate('FindDoctorScreen');
+            }}
+            title="Find a Doctor"
+          />
+        </Menu>
       </View>
 
-      <View style={styles.quickActions}>
-        <Card style={styles.actionCard} onPress={() => navigation.navigate('HealthHistoryScreen')}>
-          <IconButton icon="history" size={30} style={styles.actionIcon} />
-          <Text variant="labelMedium" style={styles.cardText}>
-            Health History
-          </Text>
-        </Card>
-
-        <Card style={styles.actionCard} onPress={() => navigation.navigate('SettingsScreen')}>
-          <IconButton icon="cog" size={30} style={styles.actionIcon} />
-          <Text variant="labelMedium" style={styles.cardText}>
-            Settings
-          </Text>
-        </Card>
-      </View>
-
-      <Divider style={styles.divider} />
-
-      {/* Feature Cards Section */}
-      <View>
-        <Card style={styles.featureCard} onPress={() => navigation.navigate('FindDoctorScreen')}>
-          <IconButton icon="account-search" size={40} style={styles.featureIcon} />
-          <Text style={styles.featureText}>Find a Doctor</Text>
-        </Card>
-
-        <Card style={styles.featureCard} onPress={() => navigation.navigate('ProfileScreen')}>
-          <IconButton icon="account" size={40} style={styles.featureIcon} />
-          <Text style={styles.featureText}>My Profile</Text>
-        </Card>
-
-        <Card style={styles.featureCard} onPress={() => navigation.navigate('PrescriptionsScreen')}>
-          <IconButton icon="pill" size={40} style={styles.featureIcon} />
-          <Text style={styles.featureText}>Prescriptions</Text>
-        </Card>
-
-        <Card style={styles.featureCard} onPress={() => navigation.navigate('LabResultsScreen')}>
-          <IconButton icon="flask" size={40} style={styles.featureIcon} />
-          <Text style={styles.featureText}>Lab Results</Text>
-        </Card>
-
-        <Card style={styles.featureCard} onPress={() => navigation.navigate('InsuranceScreen')}>
-          <IconButton icon="shield-check" size={40} style={styles.featureIcon} />
-          <Text style={styles.featureText}>Insurance Info</Text>
-        </Card>
-
-        {/* New Appointments Feature */}
-        <Card style={styles.featureCard} onPress={() => navigation.navigate('AppointmentsScreen')}>
-          <IconButton icon="calendar" size={40} style={styles.featureIcon} />
-          <Text style={styles.featureText}>Appointments</Text>
-        </Card>
-      </View>
-    </ScrollView>
+      {/* Emergency Floating Button */}
+      <FAB
+        style={styles.emergencyButton}
+        icon="phone"
+        label="Emergency"
+        color="#FFF"
+        onPress={handleEmergency}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    padding: 20,
-    backgroundColor: '#F5F5F5',
+    flex: 1,
+    backgroundColor: '#F8F9FA',
   },
   header: {
-    marginBottom: 30,
-    alignItems: 'center',
+    backgroundColor: '#2260FF',
+    paddingVertical: 30,
+    paddingHorizontal: 20,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
   },
-  welcomeText: {
-    color: '#2260FF',
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  headerText: {
+    color: '#FFF',
     fontWeight: 'bold',
   },
   subtitle: {
+    color: '#D0D9FF',
     marginTop: 5,
-    color: '#555',
   },
-  quickActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 15,
+  profileIcon: {
+    backgroundColor: '#FFFFFF33',
   },
-  actionCard: {
+  notificationIcon: {
+    backgroundColor: '#FFFFFF33',
+  },
+  searchBar: {
     flex: 1,
-    marginHorizontal: 5,
-    alignItems: 'center',
-    padding: 15,
-    borderRadius: 10,
+    height: 40,
+    marginHorizontal: 10,
+    borderRadius: 20,
     backgroundColor: '#FFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 2,
+    paddingHorizontal: 15,
+    fontSize: 16,
   },
-  actionIcon: {
-    backgroundColor: '#E8F0FE',
-    marginBottom: 5,
+  scrollContent: {
+    padding: 20,
   },
-  cardText: {
-    textAlign: 'center',
-    color: '#2260FF',
-    fontWeight: '600',
-  },
-  divider: {
-    marginVertical: 20,
-    height: 1,
-    backgroundColor: '#E0E0E0',
+  featureGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
   featureCard: {
+    width: (width - 60) / 2,
     marginBottom: 15,
-    padding: 15,
     alignItems: 'center',
-    borderRadius: 10,
+    padding: 20,
+    borderRadius: 15,
     backgroundColor: '#FFF',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 3,
+    shadowRadius: 4,
     elevation: 2,
   },
-  featureIcon: {
-    marginBottom: 5,
+  cardIcon: {
+    marginBottom: 10,
     backgroundColor: '#E8F0FE',
   },
-  featureText: {
+  cardText: {
     color: '#2260FF',
     fontWeight: '600',
+    textAlign: 'center',
+  },
+  bottomNavigation: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    right: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 10,
+    backgroundColor: '#FFF',
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 4,
+  },
+  bottomIcon: {
+    backgroundColor: '#DBEAFE',
+  },
+  emergencyButton: {
+    position: 'absolute',
+    bottom: 90,
+    right: 20,
+    backgroundColor: '#FF4D4D',
+    elevation: 6,
   },
 });
 

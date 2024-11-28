@@ -1,7 +1,11 @@
 import React from 'react';
+import { LogBox } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Provider as PaperProvider } from 'react-native-paper';
+LogBox.ignoreLogs([
+  'Support for defaultProps will be removed from function components in a future major release.',
+]);
 
 // Import existing screens (Authentication flow)
 import WelcomeScreen from './src/screens/WelcomeScreen';
@@ -24,6 +28,8 @@ import ChatScreen from './src/screens/ChatScreen';
 import HealthTipsScreen from './src/screens/HealthTipsScreen';
 import HealthHistoryScreen from './src/screens/HealthHistoryScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
+import NotificationScreen from './src/screens/NotificationScreen';
+import EmergencyScreen from './src/screens/EmergencyScreen';
 
 const Stack = createStackNavigator();
 
@@ -58,6 +64,9 @@ const App = () => {
             component={CreateAccount}
             options={{ title: 'Create Account' }}
           />
+          <Stack.Screen name="NotificationsScreen" 
+          component={NotificationScreen}
+          options={{ title: 'Notifications' }}/>
 
           {/* Main App Flow (after authentication) */}
           <Stack.Screen
@@ -90,6 +99,9 @@ const App = () => {
             component={InsuranceScreen}
             options={{ title: 'Insurance Info' }}
           />
+          <Stack.Screen name="EmergencyScreen" 
+          component={EmergencyScreen} 
+          options={{ title: 'Emergency' }}/>
 
           {/* Health-related Features */}
           <Stack.Screen
@@ -116,6 +128,7 @@ const App = () => {
           name="AppointmentsScreen" 
           component={AppointmentsScreen} 
           options={{ title: 'Appointments' }}/>
+
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>
