@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, Dimensions, TextInput } from 'react-native';
 import { Text, IconButton, Card, Menu, FAB } from 'react-native-paper';
 
@@ -6,6 +6,7 @@ const { width } = Dimensions.get('window');
 
 const HomeScreen = ({ navigation }) => {
   const [menuVisible, setMenuVisible] = React.useState(false);
+  const scrollViewRef = useRef(null); // Create a reference for ScrollView
 
   const openMenu = () => setMenuVisible(true);
   const closeMenu = () => setMenuVisible(false);
@@ -13,6 +14,19 @@ const HomeScreen = ({ navigation }) => {
   const handleEmergency = () => {
     navigation.navigate('EmergencyScreen');
   };
+
+  // Scroll to the right after 5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (scrollViewRef.current) {
+        // Scroll to the right by 300 units (adjust this based on your content)
+        scrollViewRef.current.scrollTo({ x: 300, animated: true });
+      }
+    }, 5000); // 5 seconds delay
+
+    // Cleanup the timer if component unmounts
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -52,23 +66,30 @@ const HomeScreen = ({ navigation }) => {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Feature Cards */}
-        <View style={styles.featureGrid}>
-          {/* Chat with Dr. GPT */}
-          <Card style={styles.featureCard} onPress={() => navigation.navigate('ChatScreen')}>
-            <IconButton icon="chat" size={30} style={styles.cardIcon} />
-            <Text style={styles.cardText}>Chat with Dr.GPT</Text>
+        {/* Health Tips Scrollable Section */}
+        <Text variant="headlineSmall" style={styles.healthTipsHeader}>
+          Health Tips
+        </Text>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.healthTipsContainer}
+          ref={scrollViewRef} // Attach the ref to ScrollView
+        >
+          <Card style={styles.healthTipCard}>
+            <Text style={styles.healthTipText}>Drink 8 glasses of water daily</Text>
           </Card>
-          <Card style={styles.featureCard} onPress={() => navigation.navigate('HealthTipsScreen')}>
-            <IconButton icon="heart" size={30} style={styles.cardIcon} />
-            <Text style={styles.cardText}>Health Tips</Text>
+          <Card style={styles.healthTipCard}>
+            <Text style={styles.healthTipText}>Exercise for 30 minutes each day</Text>
           </Card>
-          {/* Settings */}
-          <Card style={styles.featureCard} onPress={() => navigation.navigate('SettingsScreen')}>
-            <IconButton icon="cog" size={30} style={styles.cardIcon} />
-            <Text style={styles.cardText}>Settings</Text>
+          <Card style={styles.healthTipCard}>
+            <Text style={styles.healthTipText}>Get 7-8 hours of sleep each night</Text>
           </Card>
-        </View>
+          <Card style={styles.healthTipCard}>
+            <Text style={styles.healthTipText}>Eat a balanced diet with fruits and vegetables</Text>
+          </Card>
+        </ScrollView>
+
       </ScrollView>
 
       {/* Floating Bottom Navigation */}
@@ -123,6 +144,20 @@ const HomeScreen = ({ navigation }) => {
               navigation.navigate('FindDoctorScreen');
             }}
             title="Find a Doctor"
+          />
+          <Menu.Item
+            onPress={() => {
+              closeMenu();
+              navigation.navigate('ChatScreen');
+            }}
+            title="Chat with Dr.GPT"
+          />
+          <Menu.Item
+            onPress={() => {
+              closeMenu();
+              navigation.navigate('SettingsScreen');
+            }}
+            title="Settings"
           />
         </Menu>
       </View>
@@ -182,6 +217,31 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
+  },
+  healthTipsHeader: {
+    marginTop: 20,
+    fontWeight: '600',
+    fontSize: 18,
+  },
+  healthTipsContainer: {
+    marginTop: 10,
+  },
+  healthTipCard: {
+    width: 250,
+    marginRight: 15,
+    padding: 20,
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  healthTipText: {
+    fontSize: 16,
+    color: '#2260FF',
+    textAlign: 'center',
   },
   featureGrid: {
     flexDirection: 'row',

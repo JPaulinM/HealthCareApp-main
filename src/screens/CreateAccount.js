@@ -4,6 +4,7 @@ import { TextInput, Button, HelperText, IconButton } from 'react-native-paper';
 import CountryPicker from 'react-native-country-picker-modal';
 import { createUserWithEmail, googleSignIn } from '../constants/FireBaseConfig';
 
+
 const CreateAccount = ({ navigation }) => {
     // State management
     const [fullName, setFullName] = useState('');
@@ -17,7 +18,6 @@ const CreateAccount = ({ navigation }) => {
     const [errors, setErrors] = useState({});
     const [secureTextEntry, setSecureTextEntry] = useState(true);
     const [loading, setLoading] = useState(false);
-    const [successMessage, setSuccessMessage] = useState('');
 
     // Validation logic
     const validateFields = () => {
@@ -40,28 +40,31 @@ const CreateAccount = ({ navigation }) => {
         return Object.keys(newErrors).length === 0;
     };
 
-    // Account creation handler
     const handleCreateAccount = async () => {
         if (validateFields()) {
-            setLoading(true);
-            setErrors({});
-            try {
-                await createUserWithEmail(email, password, {
-                    fullName,
-                    mobileNumber: `+${phoneCode}${mobileNumber}`,
-                    birthDate: `${birthDate.day}/${birthDate.month}/${birthDate.year}`,
-                });
-                setSuccessMessage('Account created successfully!');  // Success message
-                setTimeout(() => {
-                    navigation.navigate('HomeScreen');  // Navigate after a few seconds
-                }, 2000);  // Allow time to display the success message
-            } catch (error) {
-                setErrors((prev) => ({ ...prev, email: 'Email is already in use or invalid' }));
-            } finally {
-                setLoading(false);
+          setLoading(true);
+          setErrors({});
+          try {
+            await createUserWithEmail(email, password); // Ensure this method exists and works
+            navigation.navigate('HomeScreen');
+          } catch (error) {
+            console.error('Account creation error:', error); // Debugging
+            if (error.code === 'auth/email-already-in-use') {
+              setErrors((prev) => ({ ...prev, email: 'This email is already registered.' }));
+            } else if (error.code === 'auth/invalid-email') {
+              setErrors((prev) => ({ ...prev, email: 'Please provide a valid email address.' }));
+            } else if (error.code === 'auth/weak-password') {
+              setErrors((prev) => ({ ...prev, password: 'Password should be stronger.' }));
+            } else {
+              setErrors((prev) => ({ ...prev, email: 'An unexpected error occurred. Please try again.' }));
             }
+          } finally {
+            setLoading(false);
+          }
         }
-    };
+      };
+      
+  
 
     // Google Sign-In handler
     const handleGoogleSignIn = async () => {
@@ -86,7 +89,6 @@ const CreateAccount = ({ navigation }) => {
         <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
             <View style={styles.container}>
                 <Text style={styles.title}>Create New Account</Text>
-                
 
                 {/* Full Name Input */}
                 <TextInput
@@ -130,6 +132,7 @@ const CreateAccount = ({ navigation }) => {
                     mode="outlined"
                     style={styles.input}
                     error={!!errors.password}
+                    right={<TextInput.Icon icon={secureTextEntry ? "eye-off" : "eye"} onPress={() => setSecureTextEntry(!secureTextEntry)} />}
                 />
                 {errors.password && <HelperText type="error">{errors.password}</HelperText>}
 
@@ -145,6 +148,7 @@ const CreateAccount = ({ navigation }) => {
                     mode="outlined"
                     style={styles.input}
                     error={!!errors.confirmPassword}
+                    right={<TextInput.Icon icon={secureTextEntry ? "eye-off" : "eye"} onPress={() => setSecureTextEntry(!secureTextEntry)} />}
                 />
                 {errors.confirmPassword && <HelperText type="error">{errors.confirmPassword}</HelperText>}
 
@@ -156,6 +160,11 @@ const CreateAccount = ({ navigation }) => {
                         withCallingCode
                         countryCode={countryCode}
                         onSelect={onCountrySelect}
+                        containerButtonStyle={{
+                            borderRadius: 10, 
+                            paddingVertical: 1,
+                            paddingHorizontal: 7,
+                        }}
                     />
                     <Text style={styles.phoneCode}>+{phoneCode}</Text>
                     <TextInput
@@ -170,6 +179,8 @@ const CreateAccount = ({ navigation }) => {
                         error={!!errors.mobileNumber}
                     />
                 </View>
+
+
                 {errors.mobileNumber && <HelperText type="error">{errors.mobileNumber}</HelperText>}
 
                 {/* Date of Birth Inputs */}
@@ -205,15 +216,22 @@ const CreateAccount = ({ navigation }) => {
                 <Button
                     mode="contained"
                     onPress={handleCreateAccount}
-                    style={styles.loginButton}
+                    style={styles.signupButton}
                     loading={loading}
                     disabled={loading}
+                    activeOpacity={0.7}
                 >
                     {loading ? 'Creating Account...' : 'Sign Up'}
                 </Button>
 
-                {/* Success Message */}
-                {successMessage && <Text style={styles.successMessage}>{successMessage}</Text>}
+                <Button
+                mode="contained"
+                style={styles.signupButton}
+                onPress={() => navigation.navigate('UserDataScreen', { email, fullName })}
+                >
+                Fill Additional Details
+                </Button>
+
 
                 {/* Error Message for Google Sign-In */}
                 {errors.google && <HelperText type="error">{errors.google}</HelperText>}
@@ -236,20 +254,97 @@ const CreateAccount = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    // styles remain the same as in your original code
-    successMessage: {
-        color: 'green',
-        fontSize: 16,
-        marginVertical: 10,
-        textAlign: 'center',
-    },
-    ontainer: {
-        flex: 1,
-        padding: 20,
-    },
-    input: {
-        marginBottom: 10,
-    },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: '#F5F7FA',
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#2260FF',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  input: {
+    marginBottom: 12,
+  },
+  signupButton: {
+    backgroundColor: '#2260FF',  
+    borderRadius: 25,
+    paddingVertical: 10,
+    marginBottom: 20,
+    marginTop: 25,
+    elevation: 5,  
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  
+  orText: {
+    textAlign: 'center',
+    color: '#888',
+    marginBottom: 10,
+  },
+  socialContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  socialIcon: {
+    backgroundColor: '#9BBFFF',
+    marginHorizontal: 10,
+    borderRadius: 50,
+  },
+  signUpText: {
+    textAlign: 'center',
+    color: '#888',
+    fontSize: 12,
+  },
+  signUpLink: {
+    color: '#2260FF',
+    fontWeight: 'bold',
+  },
+  phoneContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    backgroundColor: '#F5F7FA', 
+    borderRadius: 12,  
+    paddingHorizontal: 4, 
+    paddingVertical: 2,   
+    borderWidth: 1,
+    borderColor: '#D1D1D1', 
+  },
+  
+  phoneCode: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2260FF', 
+    marginRight: 8,
+  },
+  
+  phoneInput: {
+    flex: 1,
+    backgroundColor: '#D5E9FF',
+    paddingVertical: 4,  
+    paddingLeft: 6,
+    borderRadius: 15, 
+    fontSize: 15, 
+    color: '#333',
+    borderWidth: 1,
+    borderColor: '#D1D1D1',  
+  },
+  
+  phoneInputFocused: {
+    borderColor: '#2260FF', // Blue border when focused
+  },
+  
+  
 });
 
 export default CreateAccount;
+
+

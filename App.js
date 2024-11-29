@@ -13,6 +13,7 @@ import AuthScreen from './src/screens/AuthScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import ForgotPassword from './src/screens/ForgotPassword';
 import CreateAccount from './src/screens/CreateAccount';
+import UserDataScreen from './src/screens/UserDataScreen';
 
 // Import main app screens (After successful login)
 import HomeScreen from './src/screens/HomeScreen';
@@ -67,6 +68,11 @@ const App = () => {
           <Stack.Screen name="NotificationsScreen" 
           component={NotificationScreen}
           options={{ title: 'Notifications' }}/>
+          <Stack.Screen
+            name="UserDataScreen"
+            component={UserDataScreen}
+            options={{title: 'User Data'}}
+          />
 
           {/* Main App Flow (after authentication) */}
           <Stack.Screen

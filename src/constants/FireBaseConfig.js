@@ -1,7 +1,13 @@
 // firebaseConfig.js
 import { initializeApp } from "firebase/app";
-import { initializeAuth, GoogleAuthProvider, signInWithCredential, getReactNativePersistence, signInWithEmailAndPassword } from "firebase/auth";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { 
+  initializeAuth, 
+  getReactNativePersistence, 
+  createUserWithEmailAndPassword, 
+  GoogleAuthProvider, 
+  signInWithPopup 
+} from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -11,16 +17,26 @@ const firebaseConfig = {
   storageBucket: "drgpt-ad363.firebasestorage.app",
   messagingSenderId: "449715385470",
   appId: "1:449715385470:web:ed04539b6f9d0a3a8f142f",
-  measurementId: "G-TQP1C7WLVZ"
+  measurementId: "G-TQP1C7WLVZ",
 };
 
-// Initialize Firebase app
+// Initialize Firebase App
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firebase Auth with persistence via AsyncStorage
+// Initialize Firebase Auth with AsyncStorage persistence
 const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage),  // Enables persistent auth state
+  persistence: getReactNativePersistence(AsyncStorage),
 });
 
-// Export only necessary Firebase modules for use in other parts of the app
-export { auth, GoogleAuthProvider, signInWithCredential, signInWithEmailAndPassword };
+// Export Firebase Auth methods
+export const createUserWithEmail = (email, password) =>
+  createUserWithEmailAndPassword(auth, email, password);
+
+export const googleSignIn = async () => {
+  const provider = new GoogleAuthProvider();
+  const result = await signInWithPopup(auth, provider);
+  return result.user;
+};
+
+// Export auth instance if needed elsewhere
+export { auth };
